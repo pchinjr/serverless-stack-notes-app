@@ -1,4 +1,4 @@
-service: #notes-app-api
+service: notes-app-api
 
 # Use serverless-webpack plugin to transpile es6/es7
 plugins: 
@@ -13,3 +13,33 @@ provider:
   runtime: nodejs6.10
   stage: prod
   region: us-east-1
+
+iamRoleStatements: 
+  - Effect: Allow
+    Action: 
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource: "arn:aws:dynamodb:us-east-1:*:*"
+
+functions:
+  create: 
+    handler: create.main
+    events: 
+      - http:
+          path: notes
+          method: post
+          cors: true
+          authorizer: aws_iam`
+  get: 
+    handler: get.main
+    events: 
+      - http:
+          path: notes/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
